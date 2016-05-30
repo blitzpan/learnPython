@@ -332,8 +332,165 @@ print("并集=", s | s2)
 
 ## 函数
 ###调用函数
+
+* `abs`：绝对值
+* `max`：最大值
+* `int`：转成int
+* `float`：转成float
+* `str`：转成字符串
+* `bool`：转成布尔类型
+
+
+
+
 ###定义函数
+* 使用`def`定义函数：
+* 如果没有return语句，那么函数返回None。
+* `return None`可以写成`return`
+* >如果你已经把my_abs()的函数定义保存为abstest.py文件了，那么，可以在该文件的当前目录下启动Python解释器，用from abstest import my_abs来导入my_abs()函数，注意abstest是文件名（不含.py扩展名）。
+####空函数pass
+> pass语句什么都不做，那有什么用？实际上pass可以用来作为占位符，比如现在还没想好怎么写函数的代码，就可以先放一个pass，让代码能运行起来。
+pass还可以用在其他语句里，缺少了pass，代码运行就会有语法错误。
+```
+def nop():
+	pass
+```
+```
+if age>=18:
+	pass
+```
+
+####参数检查
+
+```
+# -*- coding:utf-8 -*-
+def my_abs(x):
+    if not isinstance(x, (int,float)):
+        raise TypeError('bad operand type')
+    if x>=0:
+        return x 
+    else:
+        return -x 
+        
+print(my_abs(-5))
+print(my_abs('a'))
+```
+####返回多个值
+实际上是返回一个tuple，按位置赋值给接受的对象。
+```
+import math
+def move(x,y,step,angle=0):
+    nx=x+step*math.cos(angle)
+    ny=y-step*math.sin(angle)
+    return nx,ny
+x,y=move(100,100,60,math.pi/6)
+print(x,y)
+151.96152422706632 70.0
+```
+解一元二次方程：
+```
+#一元二次方程的解法
+def quadratic(a,b,c):
+    if a==0:
+        return -c/b
+    else:
+        temp = math.sqrt(b*b-4*a*c)
+        return (temp-b)/(2*a),(-temp-b)/(2*a)
+print(quadratic(2,3,1))
+print(quadratic(1,3,-4))
+```
+
+
+
 ###函数的参数
+
+**总结**
+* `*args`可变参数，args接受一个tuple
+* `**kw`关键字参数，kw接受一个dict
+
+####参数组合
+Python中定义函数，参数定义的顺序是：*必选参数-默认参数-可变参数-命名关键字参数-关键字参数*
+
+####默认参数
+```
+def people(name,sex='男',city='Beijing'):
+```
+调用的时候：
+```
+people('zhangsan')
+#也可以将一个默认参数赋值，其他没有赋值的还是使用默认值
+people('zhangsan',city='Tianjin')
+```
+**默认函数的坑：**
+**定义默认参数要牢记一点：默认参数必须指向不变对象！**
+[具体坑的案例](http://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000/001431752945034eb82ac80a3e64b9bb4929b16eeed1eb9000)
+####可变参数
+**参数的个数不确定**
+* 参数作为一个list或者tuple传入，可以变相实现可变参数
+```
+def calc(numbers):
+    sum=0
+    for x in numbers:
+        sum = sum+x*x 
+    return sum 
+print("可变参数第一种调用=",calc([1,2,3]))
+```
+* 真正的可变参数
+```
+print("把函数的参数改为可变参数：")
+def calc(*numbers):
+    sum=0
+    for x in numbers:
+        sum=sum+x*x 
+    return sum 
+print("可变参数调用1，传入任意个参数=",calc(1,2,3))
+#在list或tuple前面加一个*号，把list或tuple的元素变成可变参数传进去
+parm=[1,2,3]
+print(calc(*parm))
+```
+####关键字参数
+
+> 可变参数允许你传入0个或任意个参数，这些可变参数在函数调用时自动组装为一个tuple。
+> 而关键字参数允许你传入0个或任意个含参数名的参数，这些关键字参数在函数内部自动组装为一个dict。
+
+```
+print("关键字参数：")
+def person(name,age,**kw):
+    print('name:',name,'age:',age,'other:',kw)
+    if 'city' in kw:
+        print('处理city信息')
+    if 'job' in kw:
+        print('处理job信息')
+
+person('Tom',30)
+extra={'city':'Beijing','job':'Engineer'}
+person('Jack',24,**extra)
+```
+####命名关键字参数
+```
+#限制调用者传入的关键字参数的名字
+#和关键字参数**kw不同，命名关键字参数需要一个特殊分隔符*，*后面的参数被视为命名关键字参数
+def person(name,age,*,city,job):
+    print(name,age,city,job)
+#命名关键字参数在调用的时候必须传入参数名
+person('Jack', 24, city='Beijing', job='Engineer')
+#下面这个定义，由于命名关键字参数city有默认值，所以可以不传入city
+def person(name, age, *, city='Beijing', job):
+    pass
+#如果函数定义中已经有了一个可变参数，后面跟着的命名关键字参数就不再需要一个特殊分隔符*了
+def person(name, age, *args, city, job):
+    pass
+```
+
+
+
+
+
+
+
+
+
+
 ###递归函数
 
 ##高级特性
@@ -384,20 +541,3 @@ print("并集=", s | s2)
 ###进程 vs 线程
 ###分布式进程
 ##正则表达式
-###
-###
-###
-###
-###
-###
-###
-###
-###
-###
-###
-###
-###
-###
-###
-###
-###
