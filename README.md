@@ -492,12 +492,174 @@ def person(name, age, *args, city, job):
 
 
 ###递归函数
+```
+# -*- coding:utf-8 -*-
+def fact(n):
+    if n==1:
+        return 1
+    else:
+        return fact(n-1)*n
+print(fact(100))
+```
+**函数调用时通过栈stack这种数据结构实现的，每进入一个函数调用，就会加一层栈帧，由于栈的大小不是无限的，所以递归调用的次数过多，会导致栈溢出。**
+**使用尾递归可以防止栈溢出（遗憾的是，大多数编程语言没有针对尾递归做优化，Python也没有优化），所以尾递归也会导致栈溢出**
+**汉诺塔**
+```
+# 汉诺塔
+def move(n,a,b,c):
+    if n==1:
+        print(a,'-->',c)#只有一个直接移动
+    else:
+        move(n-1,a,c,b)#将n-1个从a移动到b上
+        print(a,'-->',c)#将第n个从a移到c上
+        move(n-1,b,a,c)#将n-1个从b移到c上
+move(3,'A','B','C')
+```
 
 ##高级特性
-###切片
+###切片(slice)
+```
+# -*- coding:utf-8 -*-
+L=[1,2,3,4,5,6,7]
+print(L[0:3])#[0:3]前包后不包，取了0、1、2三个位置的三个数
+print(L[-2:])#倒数第一个是-1
+L100 = list(range(100))
+print(L100)
+#
+print("前10个数，每两个取一个：")
+print(L100[:10:2])
+#
+print("所有数，每五个取一个：")
+print(L100[::5])
+#
+print("原样复制一个list：")
+L100Copy = L100[:]
+print(L100Copy)
+```
+> Python没有针对字符串的截取函数，只需要切片一个操作就可以完成，非常简单。
+
 ###迭代
+> Python对于dict的迭代是作用在key上的，如果要迭代value
+```
+for value in d.values()
+```
+> 如果要迭代key和value，可以用
+```
+for k,v in d.items()
+```
+> 字符串也是可以迭代的
+```
+for ch in 'ABC':
+    print(ch)
+```
+```
+print("判断一个对象是否可迭代")
+from collections import Iterable
+print(isinstance('abc',Iterable)) # str是否可以迭代
+
+print("迭代的时候同时访问索引和元素本身：")
+#enumerate函数可以把一个list变成索引-元素对
+for i,value in enumerate(['A','B','C']):
+    print(i,value)
+print('在for循环中，同时引用两个变量')
+for x,y in [(1,2),(3,4),(5,6)]:
+    print(x,y)
+
+for i,x in enumerate([(1,2),(3,4),(5,6)]):
+    print(i,x[0],x[1])
+```
+
+
 ###列表生成式
+**根据一定规则快速生成一个list**
+```
+#
+print('生成1到10=')
+print(list(range(1,11)))
+#
+print('生成=[1x1, 2x2, 3x3, ..., 10x10]')
+print("把要生成的元素x*x放前面，后面for循环，就可以把list创建出来。")
+l=[x*x for x in range(1,11)]
+print(l)
+print("生成偶数的平方=")
+l=[x*x for x in range(1,11) if x%2==0]
+print(l)
+print('两层循环生成排列=')
+l=[m+n for m in 'ABC' for n in 'xyz']
+print(l)
+#
+print("一行代码列出当前目录的所有文件和目录=")
+import os
+l=[d for d in os.listdir('.')]#os.listdir可以列出文件和目录
+print(l)
+
+#
+print("列表生成式同时使用两个变量来生成list=")
+d={"zhang":"zhangsan","li":"lisi"}
+l=[k+'='+v for k,v in d.items()]
+print(l)
+
+#
+print('把链表中的所有字符串变成小写=')
+L = ["A",'B','C']
+l = [s.lower() for s in L]
+print(l)
+#
+print("列表生成式中使用if")
+L = ['Hello', 'World', 18, 'Apple', None]
+l=[s.lower() for s in L if isinstance(s,str)]
+print(l)
+```
+
+
+
+
+
+
+
+
+
+
 ###生成器
+> 通过列表生成式，我们可以直接创建一个列表。但是，受到内存限制，列表容量肯定是有限的。而且，创建一个包含100万个元素的列表，不仅占用很大的存储空间，如果我们仅仅需要访问前面几个元素，那后面绝大多数元素占用的空间都白白浪费了。
+所以，如果列表元素可以按照某种算法推算出来，那我们是否可以在循环的过程中不断推算出后续的元素呢？这样就不必创建完整的list，从而节省大量的空间。在Python中，这种一边循环一边计算的机制，称为生成器：generator。
+要创建一个generator，有很多种方法。第一种方法很简单，只要把一个列表生成式的[]改成()，就创建了一个generator。
+> 如果一个函数定义中包含yield关键字，那么这个函数就不再是一个普通函数，而是一个generator。
+> 这里，最难理解的就是generator和函数的执行流程不一样。函数是顺序执行，遇到return语句或者最后一行函数语句就返回。而变成generator的函数，在每次调用next()的时候执行，遇到yield语句返回，再次执行时从上次返回的yield语句处继续执行。
+
+```
+#输出斐波拉切数列
+print("输出斐波拉切数列：")
+def fib(num):
+    c=0
+    cur=1
+    bac=0
+    while c<num:
+        yield cur
+        temp=cur 
+        cur=bac+cur
+        bac=temp
+        c = c+1
+f=fib(6)
+print(next(f))
+print(next(f))
+for v in f:
+    print(v)
+```
+**简化上面例子**
+```
+
+```
+
+
+
+
+
+
+
+
+
+
 ###迭代器
 ##函数式编程
 ###高阶函数
