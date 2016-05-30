@@ -121,12 +121,13 @@ b'\xe4\xb8\xad\xe6\x96\x87'.decode('utf-8')
 Python的格式化方法和C是一致的，用`%`实现。
 如果只有一个`%?`，那么括号可以省略。
 
-|%?  |          代表类型           |
-|:----|:----------------------|
-|%d    |整数                  |
-|%f    |浮点数                |
-|%s    |字符串                |
-|%x    |十六进制整数           |
+|%?  |          代表类型        |
+|:----|:-----------------------|
+|%d    |整数                   |
+|%f    |浮点数                 |
+|%s    |字符串                 |
+|%x    |十六进制整数            |
+|%%    |代表一个%               |
 ```
 >>> '%2d-%02d' % (3,1)
 ' 3-01'
@@ -135,21 +136,199 @@ Python的格式化方法和C是一致的，用`%`实现。
 ```
 
 
-
-
-
-
-
-
-
-
-
-
-
 ###使用list和tuple
+
+* list
+**有序集合**
+```
+# -*- coding:utf-8 -*-
+#定义数组
+classmates = ['zhang','sun','li']
+print("链表=", classmates)
+print("链表长度=", len(classmates))
+print("访问链表中的第2个元素=", classmates[1])
+print('链表追加一个元素')
+classmates.append('追加的元素')
+print("追加后=",classmates)
+print('在第二的位置插入一个2')
+classmates.insert(1,'2')
+print('插入后=', classmates)
+print("删除末尾元素pop")
+classmates.pop()
+print('删除末尾后=',classmates)
+print('删除第二个元素')
+classmates.pop(1)
+print('删除第二个元素后=',classmates)
+print("将第一个元素替成1")
+classmates[0]=1
+print("替换后=",classmates)
+print('数组中的一个元素有是一个数组')
+l1=[2.1,2.2,2.3]
+l2=[1,l1,3]
+print(l2)
+print('访问2.2=', l2[1][1])
+l=[]
+print('空数组',l,len(l))
+```
+
+* tuple
+**元祖：tuple一旦初始化就不能修改，没有insert/append等方法**
+```
+# -*- coding:utf-8 -*-
+t=(1,2)
+print("1 tuple=", t)
+t=()
+print('2 定义空的',t)
+t=(1,)
+print('3 只有一个元素的时候必须这么定义，否则当成小括号处理=',t)
+```
+
+
+
+
+
+
+
+
 ###条件判断
+
+```
+# -*- coding:utf-8 -*-
+age=20
+if age>=18:
+    print("可以枪毙了！")
+    print("冒号下面所有缩进的代码是一个代码块。")
+    
+age=16
+if age>=18:
+    print("18岁以上")
+elif age>14:
+    print("大于14小于18岁")
+else:
+    print("还不满14岁")
+
+l1 = []
+print("对于0、空字符串、空list，都等于False")
+if l1:
+    print(True)
+else:
+    print(False)
+    
+print("输入进行if判断：")
+birth=input("出生日期：")
+#int()把一个字符串转成int类型
+if(int(birth)<2000):
+    print("00前")
+else:
+    print("00后")
+    
+    
+```
+
 ###循环
+
+* `for...in`循环
+```
+# -*- coding:utf-8 -*-
+names=['zhang','li','wang']
+for name in names:
+    print(name)
+print("求1到10的和。")
+sum=0
+for x in [1,2,3,4,5,6,7,8,9,10]:
+    sum=sum+x
+print("1加到10=", sum)
+```
+`range()`：生成一个整数序列。
+`list(range(5))`：range生成整数序列，然后通过list方法转换成list。
+`range(5)`：生成从0开始小于5的整数。
+```
+#range
+print(list(range(10)))
+#求0到100的和：
+print('求0到100的和：')
+sum=0
+for x in range(101):
+    sum = sum + x 
+print(sum)
+```
+* while循环
+```
+#求100以内所有奇数的和
+sum=0
+n=1 
+while n<100:
+    sum = sum+n
+    n=n+2
+print(sum)
+```
+
+
+
+
 ###使用dict和set
+####dict
+
+字典类：dict(dictionary，其它语言中称为map)
+```
+# -*- coding:utf-8 -*-
+#初始化
+d={}
+d={"li":"liSi",'wang':'wangWu'}
+#新增
+d['zhang']='zhangSan'
+print(d['zhang'])
+print(d['wang'])
+```
+
+**取值的时候，如果key不存在，那么会报错，解决办法:**
+
+* `in`判断
+```
+#1. in操作
+ifIn = 'zhang' in d
+print(ifIn)
+```
+
+
+* `get`判断，如果key不存在，返回None，或者返回自定义值
+```
+#2. get操作：不存在返回None或者如果有默认值返回默认值
+print(d.get('zhang'))
+print(d.get('zhang1'))
+print(d.get('zhang1','zhang1不存在。'))
+```
+####set
+* set中的值不能重复。
+* 使用list集合作为构造参数。
+
+```
+#set使用list操作构造参数
+s=set([1,2,3])
+print(s)
+#set新增
+s.add(4)
+print(s)
+#set删除
+s.remove(4)
+print(s)
+#set求交集、并集
+s2=set([3,4,5,6])
+print("交集=", s & s2)
+print("并集=", s | s2)
+```  
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 函数
 ###调用函数

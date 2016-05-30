@@ -3,15 +3,15 @@ height=1.75
 weight=80.5
 bmi=weight/height/height
 if bmi<18.5:
-    print ('过轻')
+    print ('杩囪交')
 elif bmi<25:
-    print('正常')
+    print('姝ｅ父')
 elif bmi<28:
-    print('过重')
+    print('杩囬噸')
 elif bmi<32:
-    print('肥胖')
+    print('鑲ヨ儢')
 else:
-    print('严重肥胖')
+    print('涓ラ噸鑲ヨ儢')
     
     
     
