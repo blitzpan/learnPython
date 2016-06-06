@@ -540,18 +540,26 @@ print(L100Copy)
 
 ###迭代
 > Python对于dict的迭代是作用在key上的，如果要迭代value
+
 ```
 for value in d.values()
 ```
+
 > 如果要迭代key和value，可以用
+
 ```
 for k,v in d.items()
 ```
+
 > 字符串也是可以迭代的
+
+
 ```
 for ch in 'ABC':
     print(ch)
 ```
+
+
 ```
 print("判断一个对象是否可迭代")
 from collections import Iterable
@@ -627,6 +635,7 @@ print(l)
 > 如果一个函数定义中包含yield关键字，那么这个函数就不再是一个普通函数，而是一个generator。
 > 这里，最难理解的就是generator和函数的执行流程不一样。函数是顺序执行，遇到return语句或者最后一行函数语句就返回。而变成generator的函数，在每次调用next()的时候执行，遇到yield语句返回，再次执行时从上次返回的yield语句处继续执行。
 
+
 ```
 #输出斐波拉切数列
 print("输出斐波拉切数列：")
@@ -646,7 +655,9 @@ print(next(f))
 for v in f:
     print(v)
 ```
+
 **简化上面例子**
+
 ```
 
 ```
@@ -665,7 +676,100 @@ for v in f:
 ###高阶函数
 ####map/reduce
 ####filter
+
+> 和map()类似，filter()也接收一个函数和一个序列。和map()不同的是，filter()把传入的函数依次作用于每个元素，然后根据返回值是True还是False决定保留还是丢弃该元素。
+
+```
+# -*- coding:utf-8 -*-
+print("在一个list中，删掉偶数，只保留奇数。")
+def is_odd(n):
+    return n%2==1
+L = [0,1,2,3,4,5,6,7,8,9]
+l = list(filter(is_odd, L))
+print(l)
+#
+print('把一个序列中的空字符串删掉。')
+def not_empty(s):
+    return s and s.strip() # and 主要是处理None情况
+l = list(filter(not_empty, ['A', '', 'B', None, 'C', '  ']))
+print(l)
+
+``` 
+
+**注意：**
+
+声明：s为字符串，rm为要删除的字符序列
+
+|    |    |
+|:----|---- |
+|s.strip(rm)|        删除s字符串中开头、结尾处，位于 rm删除序列的字符|
+|s.lstrip(rm)|       删除s字符串中开头处，位于 rm删除序列的字符|
+|s.rstrip(rm)|      删除s字符串中结尾处，位于 rm删除序列的字符|
+|      |当rm为空时，默认删除空白符（包括'\n', '\r', '\t', ' ')|
+
+```
+print('求出全体素数。')
+#先构造一个从3开始的奇数序列：
+def _odd_iter():
+    n=1
+    while True:
+        n=n+2
+        yield n
+#定义一个筛选条件：
+def _not_divisible(n):
+    return lambda x:x%n>0 #不能被整除返回true
+def primes():
+    yield 2
+    it = _odd_iter() #初始化序列
+    while True:
+        n = next(it)
+        yield n
+        it = filter(_not_divisible(n), it)
+for n in primes():
+    if n<1000:  #由于primes()也是一个无限序列，所以调用时需要设置一个退出循环的条件：
+        print(n)
+    else:
+        break 
+```
+
+```
+print('计算回数：')
+def is_palindrome(n):
+    n = str(n)
+    i=0
+    while i<len(n)/2:
+        if n[i]!=n[-1-i]:
+            return False
+        i=i+1
+    return True
+    
+output = filter(is_palindrome, range(1,1000))
+print(list(output))
+#计算回数简化版：
+def is_palindrome(n):
+    n=str(n)
+    return n[:] ==n[::-1]
+```
+
+***n[:] ==n[::-1]***简直是6翻了，-1就是从后往前，一个一个递减。
+
+
 ####sorted
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ###返回函数
 ###匿名函数
 ###装饰器

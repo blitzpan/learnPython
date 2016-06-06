@@ -101,6 +101,15 @@ print(next(f))
 for v in f:
     print(v)
     
+#输出杨辉三角
+def yhsj(num):
+    ol=[1]
+    n=1
+    while n<=num:
+        print(ol)
+        nl=[]
+        nl
+    
     
     
     
