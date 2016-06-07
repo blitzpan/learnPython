@@ -908,6 +908,21 @@ print(f())
 
 ###装饰器
 
+```
+print("打印方法的名称：")
+def now():
+	print('now 方法内部。')
+f = now
+f()
+print(now.__name__)
+print(f.__name__)
+```
+
+
+
+
+
+
 
 ###偏函数
 ##模块
