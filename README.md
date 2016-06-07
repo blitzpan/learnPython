@@ -887,7 +887,28 @@ print(f3())
 
 
 ###匿名函数
+> lambda表示匿名函数，冒号前面的x表示函数参数，匿名函数有个限制，就是只能有一个表达式，不用写return，返回值就是该表达式的结果。
+
+```
+# -*- coding:utf-8 -*-
+print("匿名函数：")
+f = lambda x:x*x
+print(f(5))
+
+print("匿名函数作为返回值：")
+def build(x,y):
+	return lambda :x*y
+f = build(3,5)
+print(f())
+```
+
+
+
+
+
 ###装饰器
+
+
 ###偏函数
 ##模块
 ###使用模块
