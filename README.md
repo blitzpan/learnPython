@@ -814,6 +814,65 @@ print(L2)
 * 内部函数可以使用外部函数的参数和局部变量。
 * 但内部函数被返回时，相关的参数和变量都保存在返回的函数中，这种称为“闭包Closure”的程序结构拥有极大的威力。
 
+```
+# -*- coding:utf-8 -*-
+print("直接求和：")
+L = list(range(0,101))
+def calc_sum(*args):
+	ax=0
+	for n in args:
+		ax = ax+n
+	return ax
+print(calc_sum(1,2,3))
+#
+print("延迟加载求和：")
+def lazy_sum(*args):
+	def sum():
+		ax = 0
+		for n in args:
+			ax = ax+n
+		return ax
+	return sum
+
+f = lazy_sum(1,2,3)
+print(f()) 
+```
+
+**注意事项：**返回函数不要饮用任何循环变量，或者是后续会发生改变的变量。
+如下面这个例子
+```
+print("一个陷阱：")
+def count():
+	fs=[]
+	for i in range(1,4):
+		def f():
+			return i*i
+		fs.append(f)
+	return fs
+f1,f2,f3 = count()#这里将count()的三个返回值分别赋值给了f1,2,3
+print(f1())
+print(f2())
+print(f3())
+```
+可能你以为会输出1,4,9，但是实际结果是9,9,9。原因，返回的函数引用了变量i，而当返回的函数执行的时候，i已经变成了3。所以这里输出的是999。
+
+如果一定要使用循环变量怎么办呢？那么就在创建一个函数，将这个循环变量作为参数传入。这样会使代码变长，可利用lambda函数缩短代码。
+```
+print("返回函数中就是用到了循环变量：")
+def count():
+	fs=[]
+	def g(j):
+		def f():
+			return j*j
+		return f
+	for i in range(1,4):
+		fs.append(g(i))#g()函数会立刻执行，而g函数会返回一个函数
+	return fs
+f1,f2,f3 = count()
+print(f1())
+print(f2())
+print(f3())
+```
 
 
 
