@@ -755,22 +755,78 @@ def is_palindrome(n):
 
 
 ####sorted
+```
+print("对list进行排序；")
+L = [36,5,-12,9,-21]
+l = sorted(L)
+print(l)
+```
+sorted()函数也是一个高阶函数，它可以接收一个key函数来实现自定义的排序。
 
+> key函数作用在list的每一个元素上，并根据key函数的返回结果进行排序
 
+```
+print("按照绝对值大小进行排序：")
+l = sorted(L, key=abs)
+print(l)
+```
+对字符串排序：
+```
+print("对字符串排序：")
+L = ['bob', 'about', 'Zoo', 'Credit']
+l = sorted(L)
+print(l)
+```
+字符串忽略大小写进行排序：
+```
+print("字符串忽略大小写进行排序：")
+l = sorted(L, key=str.lower)
+print(l)
+```
+反向排序：
+> 传入第三个参数`reverse=True`即可。
 
-
-
-
-
-
-
-
-
-
-
+```
+print("反向排序：")
+l = sorted(L, key=str.lower, reverse=True)
+print(l)
+```
+```
+print("按学生姓名排序：")
+L = [('Bob', 75), ('Adam', 92), ('Bart', 66), ('Lisa', 88)]
+def by_name(t):
+    return str.lower(t[0])
+L2 = sorted(L, key=by_name)
+print(L2)
+#
+print("按照学生成绩排序：")
+def by_score(t):
+    return t[1]
+L2 = sorted(L, key=by_score)
+print(L2)
+```
 
 
 ###返回函数
+> 高阶函数除了可以接受函数作为参数外，还可以把函数作为结果值返回。
+
+在一个函数内部定义另一个函数，并且将这个内部函数作为返回值返回。
+* 内部函数可以使用外部函数的参数和局部变量。
+* 但内部函数被返回时，相关的参数和变量都保存在返回的函数中，这种称为“闭包Closure”的程序结构拥有极大的威力。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ###匿名函数
 ###装饰器
 ###偏函数
