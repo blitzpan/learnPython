@@ -64,9 +64,33 @@ def now():
 now()
 print("方法名称：", now.__name__)
 	
-	
-	
-	
+#
+print("请编写一个decorator，能在函数调用的前后打印出'begin call'和'end call'的日志。")
+print('同时，改装饰者既支持有参数，也支持无参数。')
+def log(text):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kw):
+            print('begin call：', text)
+            func(*args, **kw)
+            print('end call')
+        return wrapper
+    #return decorator(text) if callable(text) else decorator
+    if callable(text): # 这一种实现方式和上面的实现方式结果是一样的。
+        return decorator(text)
+    else:
+        return decorator
+
+@log
+def f1():
+    print('f without param')
+
+@log('parm')
+def f2():
+    print('f with param')
+
+f1()#相当于执行了 log(f1)
+f2()#相当于执行了 log('parm')(f2)
 	
 
 
