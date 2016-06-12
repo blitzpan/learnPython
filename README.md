@@ -1060,14 +1060,96 @@ max(*args)
 
 ##模块
 
+> 一个.py文件就称为一个模块。
 
+> 模块外面有包名Package。这样可以保证所有模块不冲突。本来abc模块，现在变成myPackage.abc模块。
 
+> 每一个包目录下面都会有一个`__init__.py`文件，这个文件必须存在，否则Python会把这个目录当成普通目录，而不是一个包。`__init__.py`本身就是一个模块，而它的模块名就是包名。
+
+> 不能和Python自带的模块名冲突。例如，系统自带了sys模块，自己的模块就不能命名sys.py，否则无法导入系统自带的sys模块。
 
 
 
 ###使用模块
+```
+# -*- coding:utf-8 -*-
+
+'a test module' #模块的文档注释，任何模块代码的第一个字符串都被视为模块的文档注释
+
+__author__='god pan' #把作者写进去，这样当你公开源代码后别人就可以瞻仰你的大名；
+
+import sys
+def test():
+    args  = sys.argv #sys模块有一个argv变量，用list存储了命令行的所有参数。argv至少有一个元素，因为第一个参数永远是该.py文件的名称
+    #命令行测试，打开改文件夹，按住shift，右键点击在此打开命令行窗口，然后执行python moduleTest1.py hehe
+    print(args)
+    if len(args)==1:
+        print('Hello world！')
+    elif len(args)==2:
+        print('hello,%s' % args[1])
+    else:
+        print('太多的参数！')
+
+#当我们在命令行运行hello模块文件时，Python解释器把一个特殊变量__name__置为__main__，而如果在其他地方导入该hello模块时，if判断将失败，因此，这种if测试可以让一个模块通过命令行运行时执行一些额外的代码，最常见的就是运行测试。
+if __name__=='__main__':
+    test()
+```
+
+####作用域
+
+> 正常函数和变量都是公开的。
+> `__xxx__`这样的变量可以被直接引用，但是有特殊用途，如`__author__`,`__name__`,`__doc__`可以获取到模块描述信息。
+> `_xxx`和`__xxx`变量是非公开的，不应该被直接引用（并不是不能，如果你硬是引用也没办法）。
+
+
+
+
+
 ###安装第三方模块
+
+> 安装第三方模块，是通过包管理工具pip完成的。
+> 如果你正在使用Mac或Linux，安装pip本身这个步骤就可以跳过了（Mac或Linux上有可能并存Python 3.x和Python 2.x，因此对应的pip命令是pip3。）。如果你正在使用Windows，请参考安装Python一节的内容，确保安装时勾选了pip和Add python.exe to Path。
+> 在命令提示符窗口下尝试运行pip，如果Windows提示未找到命令，可以重新运行安装程序添加pip。
+> 第三方库都会在Python官方的pypi.python.org网站注册，要安装一个第三方库，必须先知道该库的名称，可以在官网或者pypi上搜索，比如Pillow的名称叫Pillow。`pip install Pillow #如果没有安装这个模块需要先安装`
+
+```
+print('调用第三方模块生成缩略图：')
+from PIL import Image
+im = Image.open('D:/lifeIsTough/learnPython/module/test.jpg')
+print(im.format,im.size,im.mode)
+im.thumbnail((200,100))
+im.save('D:/lifeIsTough/learnPython/module/thumb.jpg','JPEG')
+```
+
+> 当我们试图加载一个模块时，Python会在指定的路径下搜索对应的.py文件，如果找不到，就会报错。
+> 默认情况下，Python解释器会搜索当前目录、所有已安装的内置模块和第三方模块，搜索路径存放在sys模块的path变量中。
+```
+import sys
+sys.path
+```
+
+> 如果我们要添加自己的搜索目录，有两种方法：
+* 一是直接修改sys.path，添加要搜索的目录：
+```
+import sys
+sys.path.append('/users/hellow.py')
+```
+* 第二种方法是设置环境变量PYTHONPATH。Python自己本身的搜索路径不受影响。
+
+
+
 ##面向对象编程
+
+
+
+
+
+
+
+
+
+
+
 ###类和示例
 ###访问限制
 ###继承和多态
