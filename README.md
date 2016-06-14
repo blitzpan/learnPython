@@ -1140,42 +1140,88 @@ sys.path.append('/users/hellow.py')
 
 ##面向对象编程
 
+```
+# -*- coding:utf-8 -*-
+print("定义一个学生类：")
+class Student(object):
+    def __init__(self,name,score):#第一个参数是self，表示实例本身
+        self.name=name
+        self.score=score
+    
+    def print_score(self):
+        print('%s:%s' % (self.name, self.score))
+
+print("创建学生实例并输出成绩：")
+bart = Student('Bart',59)#不需要传入self
+lisa = Student('Lisa', 87)
+
+if __name__=='__main__':
+    lisa.print_score()#也不需要传入self
+    bart.print_score();
+    bart.sex='男'#自由的给实例添加属性，或者通过构造方法
+```
+
+* `Student(object)`：表示该类是从object类继承过来。
+* 
+
+###类和实例
 
 
-
-
-
-
-
-
-
-
-###类和示例
 ###访问限制
-###继承和多态
-###获取对象信息
+
+* 让内部属性不被外部访问，可以把属性的名称前加两个下划线`__`，以两个下划线开头的变量是私有变量，只能内部访问。
+* **注意：**以双下划线开头，并以双下划线结尾的变量，是特殊变量，**特殊变量可以直接访问**。
+* 单下划线开头的变量，可以在外部访问，但是约定俗成，把这种变量当成私有变量，不要随便访问。
+
+```
+print('创建私有变量：')
+class Student(object):
+    def __init__(self,name,score):
+        self.__name = name
+        self.__score = score
+    def print_score(self):
+        print('%s:%s' % (self.__name, self.__score))
+        
+tom = Student('Tom', 18)
+tom.print_score()
+#print(tom.__name) #这里报错，说没有__name属性
+tom.__name='123'
+tom.print_score()
+print(tom.__name) #这里却没有报错，因为上面我们给这个实例一个__name属性
+```
+
+
+### 继承和多态
+
+```
+print('继承和多态：')
+print('定义animal类：')
+class Animal(object):
+    def run(self):
+        print('Animal is running...')
+print("定义Dog和Cat类：")
+class Dog(Animal):
+    pass
+class Cat(Animal):
+    def run(self):#重写父类的方法
+        print('Cat is running...')
+    def eat(self):
+        print('Cat is eating...')
+
+dog = Dog()
+cat = Cat()
+dog.run()
+cat.run()
+
+print('判断一个变量是否是某种类型：')
+print(isinstance(dog,Animal)) #True
+print(isinstance(dog, Cat)) #False
+```
+
+
+### 获取对象信息
+
+
+
+
 ###实例属性和类属性
-##面向对象高级编程
-###使用__slots__
-###使用@property
-###多重继承
-###定制类
-###使用枚举类
-###使用元类
-##错误、调试和测试
-###错误处理
-###调试
-###单元测试
-###文档测试
-##IO编程
-###文件读写
-###StringIO和BytesIO
-###操作文件和目录
-###序列化
-##进程和线程
-###多进程
-###多线程
-###ThreadLocal
-###进程 vs 线程
-###分布式进程
-##正则表达式
