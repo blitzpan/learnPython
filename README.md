@@ -1221,7 +1221,97 @@ print(isinstance(dog, Cat)) #False
 
 ### 获取对象信息
 
+#### 使用type()
+
+```
+print('使用type()判断对象类型：')
+print(type(123))
+print(type('123'))
+print("是否是字符串类型：", type('123')==str)
+print(type(None))
+print('使用type()来判断函数：')
+print(type(abs))
+print('判断一个对象是否是函数，用types模块中定义的常量：')
+import types
+def fun():
+    pass
+print( type(fun)==types.FunctionType ) #True
+print( type(abs)==types.BuiltinFunctionType ) #True
+print( type(lambda x:x)==types.LambdaType ) #True
+print( type(x for x in range(10))==types.GeneratorType ) #True
+```
+#### 使用isinstance()
+
+```
+print('使用isinstance()：')
+print(isinstance('abc', str))
+print('判断一个变量是否在某些类型中：')
+print( isinstance([1,2,3], (list,tuple)) )
+```
+
+#### 使用dir
+> 使用dir获得一个对象的所有属性和方法，它返回一个包含字符串的list。
+
+```
+print("使用dir()：")
+print( dir('abc') )
+```
+> 上面例子输出的方法有一个`__len__`，该方法是字符串的一个特殊方法，返回长度。如果你使用len()来获取一个对象的长度的时候，实际上len()函数内部，自动去调用了该对象的__len__()方法。如果我们自己定义的类想要使用len()来输出长度的话，那么可以为我们的类实现__len__()方法。
+
+```
+class MyObj(object):
+    def __len__(self):
+        return 100
+
+print("自定义对象的长度=", len(MyObj()) )
+```
+
+#### 方法`getattr()`/`setattr()`/`hasattr()`
+
+```
+#getattr/setattr/hasattr
+mo = MyObj()
+if hasattr(mo, 'x'):#有属性'x'吗
+    print('有属性x')
+    print(mo.x)
+else:
+    print('没有属性x')
+    setattr(mo, 'x', 10) #设置属性x
+if hasattr(mo, 'x'):#有属性'x'吗
+    print('有属性x')
+    print(mo.x)
+    print( getattr(mo, 'x') )
+
+print('获取一个不存在的属性，会抛出异常：')
+#getattr(mo, 'y')
+print( getattr(mo, 'y', 404) )  #设置默认值，如果该属性不存在，那么返回一个默认值
+
+#
+print('获取一个对象的方法：')
+fn = getattr(mo, 'print')
+fn() #相当于调用了mo.print()
+```
 
 
 
 ###实例属性和类属性
+
+* 给*实例*绑定属性：通过*实例变量*，或通过*self变量*。
+* 给*类*绑定属性：直接在class中定义属性。
+
+```
+print("实例属性、类属性：")
+class Student(object):
+    country='中国' #类属性
+    def __init__(self,name):
+        self.name=name #实例属性
+li = Student('Li')
+print(li.country, li.name)
+print('打印类属性和实例属性：')
+print(Student.country, li.country)
+li.country = '我是中国人' #给实例一个country属性
+print(Student.country, li.country)#会发现同名的实例属性和类属性同时存在
+del li.country #删除实例属性
+print(Student.country, li.country) #类属性仍然存在
+```
+**注意：**在开发中，千万不要让实例属性和类属性相同，相同的实例属性会屏蔽类属性，当实例属性删除之后类属性才起作用。
