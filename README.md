@@ -1443,5 +1443,53 @@ class Son(CA,CB):
 ```
  
 #### 定制类
+> 看到类似__slots__这种形如__xxx__的变量或者函数名就要注意，这些在Python中是有特殊用途的。
+__slots__我们已经知道怎么用了，__len__()方法我们也知道是为了能让class作用于len()函数。
+除此之外，Python的class中还有许多这样有特殊用途的函数，可以帮助我们定制类。
+
+* `__str__`
+
+```
+print("__str__方法：")
+class Student(object):
+    def __init__(self,name):
+        self.name = name
+    def __str__(self):
+        return 'student[name:%s]' % (self.name)
+
+s = Student("ZhangSan")
+print(s)
+```
+
+* `__iter__`
+
+> 如果一个类想被用于`for...in`循环，那就必须实现一个`__iter__()`方法，该方法返回一个迭代对象，然后for循环会不断调该迭代对象的`__next__()`方法拿到循环的下一个值，直到遇到`StopIteration`错误时退出循环。
+
+```
+print("__iter__()方法：斐波那契数列")
+class Fib(object):
+    def __init__(self):
+        self.a,self.b = 0,1
+    def __iter__(self):
+        return self #实例本身就是迭代对象，返回自己
+    def __next__(self):
+        self.a, self.b = self.b, self.a+self.b
+        if self.a>1000:
+            raise StopIteration()
+        return self.a #返回下一个值
+
+for n in Fib():
+    print(n)
+```
+
+* `__getitem__`取迭代器的某一个值
+
+> Fib虽然能作用于for循环，看起来和list有点像，但是不能像list一样直接取某一个值，Fib()[5]便会报错。实现`__getitem__()`就可以像list一样操作迭代器。
+
+*其实自我感觉这个方法性能挺低的，因为调用这个方法每次都是从头到尾重新计算一次，然后把当前值的结果返回*
+
+
+
+
 #### 使用枚举类
 #### 使用元类
