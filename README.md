@@ -1707,5 +1707,66 @@ print(day1==Weekday(1)) #这里会报错，因为1找不到
 ```
 
 #### 使用元类
+##### type
+**hello.py**
+```
+# -*- coding:utf-8 -*-
+class Hello(object):
+    def hello(self,name='world'):
+        print('Hello, %s' % name)
+```
+**helloTest.py**
+```
+# -*- coding:utf-8 -*-
+from hello import Hello
+h = Hello()
+h.hello()
+
+print(type(Hello)) 
+print(type(h))
+输出：
+Hello, world
+<class 'type'> #表明这是一个类
+<class 'hello.Hello'> #表明这是hello模块（文件名就是模块名）的一个Hello实例
+请按任意键继续. . .
+```
+
+* type()函数可以查看一个类型或者变量的类型。
+* type()函数可以不用通过class来创建出新的类型。
+
+要创建一个class对象，type()函数依次传入3个参数：
+* class的名称；
+* 继承的父类集合，注意Python支持多重继承，如果只有一个父类，别忘了tuple的单元素写法；
+* class的方法名称与函数绑定，这里我们把函数fn绑定到方法名hello上。
+
+> type()函数也允许我们动态创建出类来，也就是说，动态语言本身支持运行期动态创建类.
+
+```
+# -*- coding:utf-8 -*-
+
+def fn(self, name='world'): # 先定义函数
+    print('Hello, %s' % name)
+    
+Hello = type('Hello', (object,), dict(hello=fn)) # 创建Hello class
+h = Hello()
+h.hello()
+print(type(Hello))
+print(type(h))
+
+# 输出
+Hello, world
+<class 'type'>
+<class '__main__.Hello'>
+请按任意键继续. . .
+```
+
+##### metaclass
+> 出了使用type()动态创建类以外，要控制类的创建行为，还可以使用metaclass。
+> metaclass，直译为元类：先定义metaclass，就可以创建类，最后创建实例。
+> 所以，metaclass允许你创建类或者修改类。换句话说，你可以把类看成是metaclass创建出来的“实例”。
+
+*metaclass是Python里面最难理解，也是最难使用的魔术代码，正常情况下，不会用到，所以不学也可以。*
+
+元类没有学习。
 ### 错误、调试和测试
 ####错误处理
