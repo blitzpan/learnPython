@@ -1838,7 +1838,72 @@ except ValueError as e:
 ```
 
 #### 调试
+要想比较爽的进行设置断点、单步执行，就需要一个支持调试功能的IDE。目前比较好用的Python IDE有[`PyCharm`](http://www.jetbrains.com/pycharm/)。
+Eclipse加上[pydev](http://pydev.org/)插件也可以调试Python程序。
+##### 断言`assert`
+* 如果断言结果为`True`，那么继续往下走。
+* 如果断言结果为`False`，那么抛出`AssertionError`异常。
+* 启动Python解释器时可以用-O参数来关闭assert。
 
+```
+# -*- coding:utf-8 -*-
+print('使用断言来进行调试：')
+def foo(s):
+    n = int(s)
+    assert n != 0, 'n is zero!'
+    return 10/n
 
+foo('0')
+```
+
+##### logging
+* 指定记录信息的级别：`debug，info，warning，error`
+
+```
+print('通过logging来调试：')
+import logging
+logging.basicConfig(level=logging.INFO) #定义logging的输出级别
+s = '0'
+n = int(s)
+logging.info('n=%d' % n)
+print(10/n)
+```
+
+##### pdb
+> Python的调试器pdb，让程序以单步方式运行。通过命令行pdb的方式太麻烦了，所以不采用。
+
+* `1`:查看代码。
+* `n`:单步执行代码。
+* `p 变量名`:查看变量。
+* `q`:结束调试。
+
+##### pdb.set_trace()
+> 使用pdb.set_trace()不需要单步执行，只需要引入import pdb，然后再可能出错的地方添加`pdb.set_trace()`，就可以设置一个断点。
+
+*这种方法比单步好用了一些，但是也好用不到哪里去。*
+
+```
+print('通过pdg.set_trace()来进行调试：')
+import pdb
+s = "0"
+n = int(s)
+pdb.set_trace() # 程序到这里自动暂停
+print(n)
+print(10/n)
+```
 #### 单元测试
+`TDD:Test-Driven Development`：测试驱动开发。
+
+
+
+
+
 #### 文档测试
+
+
+
+
+
+
+
+
