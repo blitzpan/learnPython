@@ -1769,4 +1769,76 @@ Hello, world
 
 元类没有学习。
 ### 错误、调试和测试
-####错误处理
+#### 错误处理
+
+`try...except ...finally`
+
+`BaseException`：是所有错误类的父类。
+
+```
+# -*- coding:utf-8 -*-
+try:
+    print('try...')
+    r = 10/1
+    print('result=', r)
+except ValueError as e:
+    print('ValueError:' , e)
+except ZeroDivisionError as e:
+    print('ZeroDivisionError:', e)
+else:
+    print('如果添加了else，并且程序没有错误的话，执行else语句。')
+finally:
+    print('finally...')
+print('END')
+```
+[常见的错误类型和继承关系](https://docs.python.org/3/library/exceptions.html#exception-hierarchy)
+
+> 如果错误没有被捕获，它会一直往上抛，最后被Python解释器捕获，打印一个错误信息。
+
+
+##### 记录错误
+
+> Python内置的`logging`模块可以非常容易得记录错误信息。
+
+```
+print('打印日志：')
+import logging
+try:
+    print(10/0)
+except Exception as e:
+    logging.exception(e) # 不知道这个记录到哪里去了，可能还需要配置
+finally:
+    print('End')
+```
+##### 抛出错误
+> 可以根据需要，定义一个错误的class，确定继承关系，然后用`raise`语句抛出一个错误实例。
+
+```
+print("抛出异常：")
+class FooError(ValueError):
+    pass
+    
+def foo(s):
+    n = int(s)
+    if n==0:
+        raise FooError('invalid value:%s' % s)
+    return 10/n
+foo('0')
+```
+
+> 将异常抛给父方法
+
+```
+try:
+	pass
+except ValueError as e:
+	print('error')
+	raise # 没有参数，将这个异常原样抛出
+	raise FooException('...') # 将异常转换后抛出
+```
+
+#### 调试
+
+
+#### 单元测试
+#### 文档测试
