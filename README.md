@@ -1628,6 +1628,84 @@ print(callable('str')) #False
 
 
 #### 使用枚举类
+**枚举类刚开始就掉入了坑里：**
+我写了一个enum.py的测试类，然后写了简单的两行代码，怎么弄也不能运行，一直抱导入错误，最后终于发现原因了。
+*我自己定义的文件名是enum*，和系统自带的重复了。
+下面是这个错误的例子：
+```
+# -*- coding:utf-8 -*-
+from enum import Enum
+
+print("定义一个月份的枚举：")
+Month = Enum('Month', ('Jan','Feb','Mar','Apr','May','Jun','Aug','Sep','Oct','Nov','Dec'))
+for name,member in Month.__members__.item():
+    print(name,'==>',member,',',member.value)
+#报错：
+Traceback (most recent call last):
+  File "D:\lifeIsTough\learnPython\oopHigher\enum.py", line 2, in <module>
+    from enum import Enum
+  File "D:\lifeIsTough\learnPython\oopHigher\enum.py", line 2, in <module>
+    from enum import Enum
+ImportError: cannot import name 'Enum'
+请按任意键继续. . .
+```
+**然后我把文件名由enum.py改成enumTest.py**
+```
+# -*- coding:utf-8 -*-
+from enum import Enum
+
+print("定义一个月份的枚举：")
+Month = Enum('Month', ('Jan','Feb','Mar','Apr','May','Jun','Aug','Sep','Oct','Nov','Dec'))
+#枚举所有的成员：
+for name,member in Month.__members__.items():
+    print(name,'==>',member,',',member.value)
+print(Month.Feb, Month.Feb.value)
+
+#输出结果如下：
+定义一个月份的枚举：
+Jan ==> MonthTest.Jan , 1
+Feb ==> MonthTest.Feb , 2
+Mar ==> MonthTest.Mar , 3
+Apr ==> MonthTest.Apr , 4
+May ==> MonthTest.May , 5
+Jun ==> MonthTest.Jun , 6
+Aug ==> MonthTest.Aug , 7
+Sep ==> MonthTest.Sep , 8
+Oct ==> MonthTest.Oct , 9
+Nov ==> MonthTest.Nov , 10
+Dec ==> MonthTest.Dec , 11
+MonthTest.Feb 2
+如果想要更精确的控制枚举类型，可以从`Enum`派生出自定义类：
+请按任意键继续. . .
+```
+我们可以通过`Month.Jan`来引用一个常量。
+> value属性是自动赋值给成员的int常量，默认从1开始计数。
+
+**如果想要更精确的控制枚举类型，可以从`Enum`派生出自定义类：
+from enum import Enum, unique
+
+```
+print("如果想要更精确的控制枚举类型，可以从`Enum`派生出自定义类：")
+from enum import Enum, unique
+#unique装饰器可以帮助我们检查保证没有重复值
+@unique
+class Weekday(Enum):
+	Sun=0 #Sun的value被设定为0
+	Mon = 7
+	Tue = 2
+	Wed = 3
+	Thu = 4
+	Fri = 5
+	Sat = 6 
+    
+day1 = Weekday.Mon
+print(day1)
+print(Weekday['Tue'])
+print(Weekday(7)) #Weekday.Mon，这里括号里面的值对应的是Mon=后面的值，而不是数组，切记
+print(day1 == Weekday.Mon)
+print(day1==Weekday(1)) #这里会报错，因为1找不到
+```
+
 #### 使用元类
 ### 错误、调试和测试
 ####错误处理
