@@ -1985,7 +1985,98 @@ class TestDict(unittest.TestCase): #测试类从unittest.TestCase继承
 
 
 #### 文件读写
+* 自己实现打开关闭文件：
+```
+print('读文件：')
+try:
+    f = open('D:/lifeIsTough/learnPython/IOTest/testFile.txt','r')
+    content = f.read()
+    print(content)
+finally: #文件必须关闭，finally防止出现异常，文件没有关闭的情况
+    if f:
+        f.close()
+```
+* 系统自动关闭文件，使用with语法不用自己调用close方法：
+```
+print('with语法自动关闭文件。')
+with open(filePath, 'r') as f:
+    print(f.read())
+```
+> `read()`读取文件所有内容，容易造成内存溢出。
+> `read(size)`方法每次调用size个字节的内容。
+> `readline()`每次读取一行。
+> `readlines()`一次读取所有行并返回list。
+
+> 如果文件很小，read()一次性读取最方便；如果不能确定文件大小，反复调用read(size)比较保险；如果是配置文件，调用readlines()最方便。
+
+```
+print('readline：')
+with open(filePath, 'r') as f:
+    oneL = f.readline().strip()
+    while oneL != '':
+        print(oneL) #把末尾的\n去掉
+        oneL = f.readline().strip()
+```
+
+##### 二进制文件
+上面是读取utf-8编码的文本文件。如果要读取二进制文件，图片、视频等，用`rb`模式。
+`f = open('/Users/michael/test.jpg', 'rb')`
+
+##### 字符编码
+要读取非UTF-8编码的文本文件，需要给open()函数传入encoding参数，例如，读取GBK编码的文件：
+`f = open('/Users/michael/gbk.txt', 'r', encoding='gbk')`
+
+##### 编码不规范文件
+遇到有些编码不规范的文件，你可能会遇到UnicodeDecodeError，因为在文本文件中可能夹杂了一些非法编码的字符。遇到这种情况，open()函数还接收一个errors参数，表示如果遇到编码错误后如何处理。最简单的方式是直接忽略：
+`f = open('/Users/michael/gbk.txt', 'r', encoding='gbk', errors='ignore')`
+
+##### 写文件
+> 唯一区别是调用open()函数时，传入标识符'w'或者'wb'表示写文本文件或写二进制文件。
+> w是覆盖写，a是追加写。
+
+```
+f = open('/Users/michael/test.txt', 'w') 
+f.write('Hello, world!')
+f.close()
+```
+> 你可以反复调用write()来写入文件，但是务必要调用f.close()来关闭文件。当我们写文件时，操作系统往往不会立刻把数据写入磁盘，而是放到内存缓存起来，空闲的时候再慢慢写入。只有调用close()方法时，操作系统才保证把没有写入的数据全部写入磁盘。忘记调用close()的后果是数据可能只写了一部分到磁盘，剩下的丢失了。所以，还是用with语句来得保险。
+
+```
+with open('/Users/michael/test.txt', 'w') as f:
+    f.write('Hello, world!')
+```
+> 要写入特定编码的文本文件，请给open()函数传入encoding参数，将字符串自动转换成指定编码。
+
+
 #### StringIO和ByteIO
+
+> StringIO就是在内存中读写str。
+
+```
+print('写入StringIO：')
+from io import StringIO
+f = StringIO()
+f.write('hello')
+f.write(' ')
+f.write('world!')
+print(f.getvalue()) #获取写入后的str
+#
+print('读取StringIO：')
+f = StringIO('Hello!\n Hi!\nGoodBye!')
+while True:
+    s = f.readline()
+    if s=='':
+        break
+    print(s.strip())
+```
+##### BytesIO
+StringIO只能是str，如果要操作二进制数据，就需要使用BytesIO。
+
+
+
+
+
+
 #### 操作文件和目录
 #### 序列化
 
