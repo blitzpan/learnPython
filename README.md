@@ -2072,15 +2072,154 @@ while True:
 ##### BytesIO
 StringIO只能是str，如果要操作二进制数据，就需要使用BytesIO。
 
+```
+print('写入BytesIO：')
+from io import BytesIO
+f = BytesIO()
+f.write('中文'.encode('utf-8')) #注意，这里写入的不是str，而是tytes
+print(f.getvalue())
+#b'\xe4\xb8\xad\xe6\x96\x87'
+
+#
+print("读取BytesIO:")
+from io import StringIO
+f = BytesIO(b'\xe4\xb8\xad\xe6\x96\x87')
+content = f.read()
+print(content)
+print(content.decode('utf-8'))
+```
 
 
 
 
 
 #### 操作文件和目录
+
+> Python 内置的os模块可以直接调用操作系统提供的接口函数来操作文件。
+
+* 判断操作系统的类型
+> 如果是posix，说明系统是Linux、Unix或Mac OS X，如果是nt，就是Windows系统。
+
+```
+import os
+os.name
+```
+
+* 获取系统详细信息：os.uname()
+> windows没有这个函数
+
+```
+os.uname()
+```
+
+* 环境变量
+
+```
+os.environ
+#获取某个环境变量的值：
+os.environ.get('PATH')
+os.environ.get('x', 'default')
+```
+
+##### 操作文件和目录
+> 函数一部分在`os`模块下，一部分在`os.path`模块下。
+
+```
+print("操作文件和目录：")
+#
+print("查看当前目录的绝对路径：")
+import os,os.path
+print(os.path.abspath('.'))
+print("在某个目录下创建一个新目录：")
+#创建一个目录
+#os.mkdir('d:/testDir') #当已经存在的时候，再次创建会报错
+#先把新目录的完整路径表示出来：
+newPath = os.path.join('d:/testDir','test1') #用这种方法来获取一个路径，可以正确处理不同的操作系统的路径分隔符。Linux返回/，windows返回\
+# 但是注意，盘符后面的是/
+print(newPath)
+os.mkdir(newPath)
+#
+print('删除一个目录：')
+os.rmdir(newPath)
+print('拆分路径，也不要直接拆分，要用os.path.split()，把路径拆分成两部分，后部分是目录或者文件名：')
+pathArr = os.path.split(newPath)
+print(pathArr)
+#这些join合并、split拆分路径的函数并不要求目录和文件要真实存在，它们只对字符串进行操作。
+
+#
+filePath = os.path.join('D:/testDir','test.txt')
+print("文件重命名：")
+# 重命名的路径如果和原路径不一致，那么是移动+重命名，如果不写路径，那么把文件移动到了当前程序所在的路径
+os.rename(filePath,os.path.join('D:/testDir','test1.txt'))
+```
+
+* os模块没有文件复制，因为操作系统没有提供复制接口。可以通过文件读写来完成复制。也可以使用`shutil`模块的`copyfiles()`函数。
+* `shutil`可以看做是os模块的补充。
+
+```
+print('列出当前目录的所有目录：')
+dirs = [x for x in os.listdir('.') if os.path.isdir(x)] #遍历每一个元素，把符合的放入数组中
+print(dirs)
+
+#
+print("列出所有的xml文件：")
+files = [x for x in os.listdir('.') if os.path.isfile(x) and os.path.splitext(x)[1]=='.xml'] #获取所有以.xml结尾的文件
+print(files)
+```
+
+* 实现`dir -l`
+
+```
+print('实现dir -l')
+def dir_l():
+    files = os.listdir('.')
+    for f in files:
+        if os.path.isdir(f):
+            print('d', f)
+        else:
+            print('f', f)
+while True:
+    command = input("请输入命令：")
+    if command=='q':
+        print('退出！')
+        break
+    elif command=='dir -l':
+        dir_l()
+        break
+    else:
+        print("命令不存在！")
+```
+
+* 编写一个程序，能在当前目录以及当前目录的所有子目录下查找文件名包含指定字符串的文件，并打印出相对路径。
+
+```
+def findFile(curP, value):
+    dirs = os.listdir(curP)
+    for d in dirs:
+        if os.path.isdir(d):
+            findFile(os.path.join(curP,d), value)
+        else:
+            if value in d:
+                print(os.path.join(curP,d))
+
+findFile('.', '.xml')
+```
 #### 序列化
+* 把变量从内存中变成可存储或传输的过程称之为序列化（pickling）。其他语言称之为serialization/marshalling/flattening等。
+* 把序列化的对象重新读到内存里称之为反序列化（unpickling）。
 
 
+
+
+
+### 进程和线程
+#### 多进程
+#### 多线程
+#### ThreadLocal
+#### 进程vs.线程
+#### 分布式进程
+### 正则表达式
+### 常用内建模块
 
 
 
