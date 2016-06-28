@@ -2208,9 +2208,116 @@ findFile('.', '.xml')
 * 把变量从内存中变成可存储或传输的过程称之为序列化（pickling）。其他语言称之为serialization/marshalling/flattening等。
 * 把序列化的对象重新读到内存里称之为反序列化（unpickling）。
 
+> `pickle.dumps()`方法把任意对象序列化成types，然后把这个bytes写入文件。或者用另一个方法`pickle.dump()`直接把对象序列化后写入一个file-like object。
+
+```
+import pickle
+print("序列化：")
+print("将一个对象序列化，然后写入文件：")
+d = dict(name='Bob', age=20, score=88)
+dBytes = pickle.dumps(d) #dumps方法吧任意对象序列化成bytes。
+print(dBytes)
+
+#这是第一种写入：
+#with open('d:/testFile.txt','wb') as f:
+#    f.write(dBytes)
+
+#这是第二种写入：
+try:
+    f = open('d:/testFile.txt','wb')
+    pickle.dump(d, f) # 注意，这里是dump，而上面的是dumps
+except Exception as e:
+    print(e)
+finally:
+    f.close()
+```
+
+* 将对象从磁盘读到内存中，先把内容读到bytes，再用`pickle.loads()`方法反序列化出对象。或者用`pickle.load()`从file-like Object中直接反序列化出对象。
+
+```
+print("将对象从磁盘读到内存中：")
+try:
+    f = open('d:/testFile.txt','rb')
+    d = pickle.load(f)
+    print(d)
+except Exception as e:
+    print(e)
+finally:
+    f.close()
+```
+
+**注意：**
+不同版本的Python的序列化彼此不兼容，所以，只能用Pickle保存那些不重要的数据，不能成功序列化也没关系的。
+
+##### JSON
+
+| JSON类型 | Python类型 |
+| ---- | ---- |
+|`{}`|`dict`|
+|`[]`|`list`|
+|`"string"`|`str`|
+|`123.45`|`int/float`|
+|`true/false`|`True/False`|
+|`null`|`None`|
+
+* 基础类
+
+```
+print("将对象转成json：")
+import json
+d = dict(name='Bob', age=20, score=88)
+jsonRes = json.dumps(d)
+print(jsonRes)
+```
+* 自定义类
+
+```
+print("将自定义类转成json：")
+class Student(object):
+    def __init__(self,name,age,score):
+        self.name = name
+        self.age = age
+        self.score = score
+s = Student('ZhangSan',18,88)
+print(json.dumps(s)) # 这里直接报错，Student不是一个可序列化的对象。
+```
+* 自定义类正确转json
 
 
+```
+print("将自定义类转成json：")
+class Student(object):
+    def __init__(self,name,age,score):
+        self.name = name
+        self.age = age
+        self.score = score
+s = Student('ZhangSan',18,88)
+#print(json.dumps(s)) # 这里直接报错，Student不是一个可序列化的对象。
 
+#解决办法一：添加一个转换函数
+def studnet2dict(std):
+    return {
+        "name":std.name,
+        "age":std.age,
+        "score":std.score
+    }
+print(json.dumps(s, default=studnet2dict))
+
+#解决办法二：调用特殊属性
+print( json.dumps(s, default=lambda obj:obj.__dict__) )
+```
+###### json反序列化
+`loads()`方法先转换出dict对象，传入`object_hook`函数把`dict`转成`Student`实例。
+
+```
+print("json反序列化：")
+def dict2studnet(d):
+    return Student(d['name'],d['age'],d["score"])
+
+jsonStr = '{"name":"Lisi","age":"28","score":"100"}'
+s = json.loads(jsonStr, object_hook=dict2studnet)
+print(s.name,s.age,s.score)
+```
 
 ### 进程和线程
 #### 多进程
