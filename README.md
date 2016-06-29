@@ -2378,10 +2378,7 @@ if __name__=='__main__':
 * Pool不用start
 * 调用Pool.join()方法会等待所有子进程执行完毕。
 * 调用join之前必须调用close，调用close之后就不能新增Process了。
-
-
-
-
+* Pool的默认大小是CPU的核数。
 
 ```
 # -*- coding:utf-8 -*-
@@ -2407,6 +2404,80 @@ if __name__=='__main__':
     p.close()
     p.join()
     print('所有进程执行完成。')
+```
+##### 子进程
+> 很多时候，子进程并不是自身，而是一个外部进程。我们创建了子进程后，还要控制子进程的输入和输出。
+> `subprocess`模块可以让我们非常方便的启动一个子进程，然后控制其输入和输出。
+
+**在Python代码中运行命令`nslookup www.python.org`**
+```
+# -*- coding:utf-8 -*-
+#
+print("子进程：")
+import subprocess
+print('$ nslookup www.python.org')
+r = subprocess.call(['nslookup', 'www.python.org'])
+print('Exit code', r)
+```
+**如果子进程还需要输入，则可以通过`communicate()`方法输入：**
+
+```
+import subprocess
+
+print('$ nslookup')
+p = subprocess.Popen(['nslookup'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+output, err = p.communicate(b'set q=mx\npython.org\nexit\n')
+print(output.decode('utf-8')) #这一行报错了，无法继续执行
+print('Exit code:', p.returncode)
+```
+上面的代码相当于在命令行执行命令nslookup，然后手动输入：
+```
+set q=mx
+python.org
+exit
+```
+
+##### 进程间通信
+`multiprocessing`模块包装了底层的机制，提供了`Queue`、`Pipes`等多种方式来交换数据。
+
+> 在Unix/Linux下，`multiprocessing`模块封装了fork()调用，使我们不需要关注fork()的细节。由于Windows没有fork调用，因此，multiprocessing需要“模拟”出fork的效果，**父进程所有Python对象都必须通过`pickle`序列化再传到子进程去，所有，如果multiprocessing在Windows下调用失败了，要先考虑是不是pickle失败了。**
+
+```
+# -*- coding:utf-8 -*-
+# 进程间通信
+from multiprocessing import Process, Queue
+import os, time, random
+
+print('以Queue为例，在父进程中创建两个子进程，一个往Queue里写数据，一个从Queue里读数据：')
+
+#写数据进程执行的代码
+def write(q):
+    print("写进程：%s" % os.getpid())
+    for value in ['A','B','C','D']:
+        print('把%s放入队列。' % value)
+        q.put(value)
+        time.sleep(random.random())
+
+#读数据进程执行的代码
+def read(q):
+    print('读进程：%s' % os.getpid())
+    while True:
+        value = q.get(True)
+        print('从队列中获取：%s' % value)
+        
+if __name__=='__main__':
+    #父进程创建Queue，并传递给子进程
+    q = Queue()
+    pw = Process(target=write, args=(q,))
+    pr = Process(target=read, args=(q,))
+    #启动子进程pw，写入
+    pw.start()
+    #启动子进程pr，读取
+    pr.start()
+    #等待pw结束
+    pw.join()
+    #pr进程是死循环，无法等待其结束，只能强行终止：
+    pr.terminate()
 ```
 
 
