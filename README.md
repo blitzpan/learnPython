@@ -2349,10 +2349,65 @@ else:
 ```
 > 有了fork调用，一个进程在接到新任务时就可以复制出一个子进程来处理新任务，常见的Apache服务器就是由父进程监听端口，每当有新的http请求时，就fork出子进程来处理新的http请求。
 
-##### multiprocessing
+##### multiprocessing（跨平台版本的多进程模块）
+
+> `multiprocessing`模块提供`Process`类来代表一个进程对象。
+
+```
+# -*- coding:utf-8 -*-
+from multiprocessing import Process
+import os
+
+# 子进程要执行的代码
+def run_proc(name):
+    for x in range(10):
+        print('    子进程%s(%s)' % (name, os.getpid() ))
+        
+if __name__=='__main__':
+    print('父进程%s' % os.getpid())
+    sonP = Process(target=run_proc, args=('son1',))
+    sonP.start()
+    sonP.join() #join使该进程执行完之后程序再往下执行
+    print('子进程执行完成。')
+```
+
+##### Pool
+
+> 如果要启动大量的子进程，可以用进程池的方式批量创建子进程。
+
+* Pool不用start
+* 调用Pool.join()方法会等待所有子进程执行完毕。
+* 调用join之前必须调用close，调用close之后就不能新增Process了。
 
 
 
+
+
+```
+# -*- coding:utf-8 -*-
+from multiprocessing import Pool
+import os, time, random
+
+def long_time_task(name):
+    try:
+        print('    子进程%s(%s)开始执行：' % (name,os.getpid()))
+        start = time.time()
+        time.sleep(random.random()*3)
+        end = time.time()
+        print('    子进程%s(%s)执行了%0.4f秒' % (name, os.getpid(), end-start))
+    except Exception as e:
+        print(e)
+
+if __name__=='__main__':
+    print('父进程%s开始执行：' % os.getpid())
+    p = Pool(3)
+    for i in range(5):
+        p.apply_async(long_time_task, args=(i,) )
+    print('等待所有进程执行完成')
+    p.close()
+    p.join()
+    print('所有进程执行完成。')
+```
 
 
 
