@@ -2980,6 +2980,156 @@ print(re.match(r'^(\d+)(0*)$', '102300').groups()
 
 
 ### 常用内建模块
+#### datetime
+#### collections
+#### base64
+#### struct
+#### hashlib
+#### itertools
+#### XML
+#### HTMLParser
+
+> `feed()`方法可以多次调用，也就是不一定一次把整个HTML字符串都塞进去，可以一部分一部分塞进去。
+
+特殊字符有两种：两种都可以通过Parser解析出来。
+* 英文表示的`&nbsp`
+* 数字表示的`&#1234;`
+
+下面的例子在cmd中运行报错：`UnicodeEncodeError: 'gbk' codec can't encode character……`，[但这是windows的锅](http://blog.csdn.net/cceevv/article/details/44858631)，在安装python的目录下面有一个idle，用这个一切正常。
+
+[cmd的解决办法](http://blog.useasp.net/archive/2012/04/24/how_to_use_UTF8_encoding_in_Windows_CMD.aspx)：
+* 运行cmd。
+* 输入chcp，默认是936。
+* 输入chcp 65001，回车。
+* 窗体上右键，选择属性，设置字体Lucida Console。
+
+```
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+from html.parser import HTMLParser
+from html.entities import name2codepoint
+
+class MyHTMLParser(HTMLParser):
+
+    def handle_starttag(self, tag, attrs):
+        print('<%s>' % tag)
+
+    def handle_endtag(self, tag):
+        print('</%s>' % tag)
+
+    def handle_startendtag(self, tag, attrs):
+        print('<%s/>' % tag)
+
+    def handle_data(self, data):
+        print(data)
+        #pass
+    def handle_comment(self, data):
+        print('<!--', data, '-->')
+
+    def handle_entityref(self, name):
+        print('&%s;' % name)
+
+    def handle_charref(self, name):
+        print('&#%s;' % name)
+
+parser = MyHTMLParser()
+parser.feed('''<html>
+<head></head>
+<body>
+<!-- test html parser -->
+    <p>Some <a href=\"#\">html</a> HTML&nbsp;tutorial...<br>END</p>
+</body></html>''')
+```
 
 
+#### urllib
+urllib提供了一系列用于操作URL的功能。
+##### Get
+`urllib`的`request`模块可以非常方便的抓取`URL`内容。也就是发送一个get请求，然后返回http响应。
 
+```
+# -*- coding:utf-8 -*-
+
+from urllib import request
+with request.urlopen('https://api.douban.com/v2/book/2129650') as f:
+	data = f.read()
+	print('Status:', f.status, f.reason)
+	for k,v in f.getheaders():
+		print('%s: %s' % (k, v))
+	print('Data:', data.decode('utf-8'))
+
+```
+可以看到HTTP响应和JSON数据。
+
+**发送get请求：**
+```
+print('模拟浏览器发送get请求。模拟iPhone6去请求豆瓣首页。')
+req = request.Request('http://www.douban.com/')
+req.add_header('User-Agent', 'Mozilla/6.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/8.0 Mobile/10A5376e Safari/8536.25')
+with request.urlopen(req) as f:
+	print('Status:', f.status, f.reason)
+	for k,v in f.getheaders():
+		print('%s: %s' % (k, v))
+	print('Data:', f.read().decode('utf-8'))
+```
+
+
+##### Post
+使用Post发送请求，需要把参数data以bytes形式传入。
+
+*模拟微博登陆，先读取登陆的邮箱和口令，然后按照weibo.cn登陆页的格式以`username=***&password=***`的编码传入*
+
+```
+# -*- coding:utf-8 -*-
+
+from urllib import request,parse
+print('login weibo...')
+email=input('Email:')
+passwd = input('Password:')
+login_data = parse.urlencode([
+	('username',email),
+	('password',passwd),
+	('entry','mweibo'),
+	('client_id',''),
+	('savestate','1'),
+	('ec',''),
+	('pagerefer','https://passport.weibo.cn/signin/login?entry=mweibo&res=wel&wm=3349&r=http%3A%2F%2Fm.weibo.cn%2F'),
+])
+req = request.Request('https://passport.weibo.cn/sso/login')
+req.add_header('Origin', 'https://passport.weibo.cn')
+req.add_header('User-Agent', 'Mozilla/6.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/8.0 Mobile/10A5376e Safari/8536.25')
+req.add_header('Referer', 'https://passport.weibo.cn/signin/login?entry=mweibo&res=wel&wm=3349&r=http%3A%2F%2Fm.weibo.cn%2F')
+
+with request.urlopen(req, data=login_data.encode('utf-8')) as f:
+	print('Status:', f.status, f.reason)
+	for k, v in f.getheaders():
+		print('%s: %s' % (k, v))
+	print('Data:', f.read().decode('utf-8'))
+
+```
+
+如果登录成功，我们获得的响应如下：
+```
+Status: 200 OK
+Server: nginx/1.2.0
+...
+Set-Cookie: SSOLoginState=1432620126; path=/; domain=weibo.cn
+...
+Data: {"retcode":20000000,"msg":"","data":{...,"uid":"1658384301"}}
+```
+如果登录失败，我们获得的响应如下：
+```
+Data: {"retcode":50011015,"msg":"\u7528\u6237\u540d\u6216\u5bc6\u7801\u9519\u8bef","data":{"username":"example@python.org","errline":536}}
+```
+
+##### Handler
+如果还需要更加复杂的控制，比如通过一个Proxy去访问网站，需要使用`ProxyHandler`来处理，示例代码如下：
+```
+proxy_handler = urllib.request.ProxyHandler({'http': 'http://www.example.com:3128/'})
+proxy_auth_handler = urllib.request.ProxyBasicAuthHandler()
+proxy_auth_handler.add_password('realm', 'host', 'username', 'password')
+opener = urllib.request.build_opener(proxy_handler, proxy_auth_handler)
+with opener.open('http://www.example.com/login.html') as f:
+    pass
+```
