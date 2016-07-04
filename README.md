@@ -2902,6 +2902,83 @@ s = r`ABC\-001`
 #ABC\-001
 ```
 
+**匹配成功，返回一个`Match`对象，否则返回None。**
+
+```
+# -*- coding:utf-8 -*-
+import re
+pattern1 = r'^\d{3}\-\d{3,8}$'
+print('正则',pattern1)
+res1 = re.match(pattern1, '010-12345')
+print('010-12345=',res1)
+res1 = re.match(pattern1, '010 12345')
+print('010 12345', res1)
+
+```
+
+常用判断方法：
+
+```
+# -*- coding:utf-8 -*-
+import re
+pattern1 = r'^\d{3}\-\d{3,8}$'
+print('正则',pattern1)
+if re.match(pattern1, '010-12345'):
+    print('ok')
+else:
+    print('failed')
+```
+
+##### 切分字符串
+```
+# -*- coding:utf-8 -*-
+import re
+oldStr = 'a b     c'
+resList = oldStr.split(' ')
+print("正常的切分无法识别连续的空格：")
+print(resList)
+print('正则切分：')
+resList = re.split(r'\s+', oldStr)
+print(resList)
+print('对空格和逗号进行分割：')
+resList = re.split(r'[\s\,]+', 'a,b, c d')
+print(resList)
+print('对空格、逗号和分号进行分割：')
+resList = re.split(r'[\s\,\;]+', 'a,b;; c d')
+print(resList)
+```
+
+##### 分组
+正则出了判断是否匹配以外，还有**提取字串**的强大功能。用`()`表示的就是要提取的分组`(group)`。
+```
+# -*- coding:utf-8 -*-
+import re
+pattern01 = r'^(\d{3})-(\d{3,8})$'
+m = re.match(pattern01, '010-12345')
+print(m.group(0)) # 0是指全部字符串
+print(m.group(1))
+print(m.group(2))
+
+```
+
+##### 贪婪匹配
+正则匹配默认的是贪婪匹配，也就是匹配尽可能多的字符。
+```
+print("贪婪匹配：")
+print(re.match(r'^(\d+)(0*)$', '102300').groups()
+# ('102300', '')
+```
+
+##### 编译
+
+当我们使用Python的正则的时候，re模块会干两件事情：
+1. 编译正则表达式，如果正则表达式本身不合法，会报错。
+2. 用编译后的正则表达式去匹配字符串。
+
+> 如果一个正则表达式会重复使用上千次，那么使用预编译的正则表达式，会提高很大的效率。
+
+
+
 ### 常用内建模块
 
 
